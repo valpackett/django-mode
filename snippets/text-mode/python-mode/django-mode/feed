@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+# name : feed 
+# contributor : MyFreeWeb
+# --
+class ${1:MyFeed}(Feed):
+    title = u"${2: My Feed}"
+    link = "${3:/feeds/rss}"
+    description = u"${4:This is a feed}"
+    author_name = "${5:Vasily Pupkin}"
+    author_email = "${6:me@example.com}"
+    
+    def items(self):
+        return ${7:MyModel}.objects.order_by('-id')
