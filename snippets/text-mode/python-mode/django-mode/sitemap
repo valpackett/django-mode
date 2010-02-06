@@ -1,0 +1,10 @@
+# -*- coding: utf-8 -*-
+# name: sitemap
+# contributor: MyFreeWeb
+# --
+class ${1:MyMap}(Sitemap):
+    changefreq = "${2:never}"
+    priority = ${3:0.5}
+
+    def items(self):
+        return ${4:MyModel}.objects.filter()

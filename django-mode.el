@@ -5,5 +5,5 @@
 	)
 )
 
-(add-to-list 'auto-mode-alist '("\\(models.py\\|views.py\\|feeds.py\\|admin.py\\|urls.py\\|settings.py\\|tests.py\\|assets.py\\)" . django-mode))
+(add-to-list 'auto-mode-alist '("\\(models.py\\|views.py\\|feeds.py\\|sitemaps.py\\|admin.py\\|urls.py\\|settings.py\\|tests.py\\|assets.py\\)" . django-mode))
 ;; django-mode.el ends here
