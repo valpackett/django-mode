@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+# name: model
+# contributor: MyFreeWeb
+# --
+class ${1:MyModel}(models.Model):
+    name = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.name
+
+    @models.permalink
+    def get_absolute_url(self):
+        pass

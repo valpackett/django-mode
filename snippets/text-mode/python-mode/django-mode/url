@@ -1,0 +1,5 @@
+# -*- coding: utf-8 -*-
+# name: url
+# contributor: MyFreeWeb
+# --
+(r'${1:^page/$}', '${2:myview}'),
