@@ -24,7 +24,7 @@
 				    ))
 )
 
-(add-to-list 'auto-mode-alist '("\\<\\(models.py\\|views.py\\|feeds.py\\|sitemaps.py\\|admin.py\\|urls.py\\|settings.py\\|tests.py\\|assets.py\\)" . django-mode))
+(add-to-list 'auto-mode-alist '("\\<\\(models.py\\|views.py\\|handlers.py\\|feeds.py\\|sitemaps.py\\|admin.py\\|urls.py\\|settings.py\\|tests.py\\|assets.py\\)" . django-mode))
 
 ;;
 ;; a part from http://garage.pimentech.net/libcommonDjango_django_emacs/

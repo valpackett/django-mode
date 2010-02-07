@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+# name: view
+# contributor: MyFreeWeb
+# --
+class ${1:MyHandler}(BaseHandler):
+    allowed_methods = ('GET', 'POST', 'PUT', 'DELETE')
+    model = ${2:MyModel}
+
+    @throttle(${3:60, 60})
+    def read(${4:self, request}):
+        return rc.ALL_OK
+
+    @throttle($3)
+    def create($4):
+        return rc.CREATED
+
+    @throttle($3)
+    def update($4):
+        return rc.ALL_OK
+
+    @throttle($3)
+    def delete($4):
+        return rc.DELETED
