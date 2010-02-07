@@ -1,3 +1,4 @@
+;; django-mode.el - Major mode for Django web framework.
 ;; Copyright 2010 MyFreeWeb
 ;;
 ;;   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,8 @@
 ;;   See the License for the specific language governing permissions and
 ;;   limitations under the License.
 
+(require 'python-mode)
+
 (define-derived-mode django-mode python-mode "Django" "Major mode for Django web framework.")
 (add-hook 'django-mode-hook
 	  (lambda ()
@@ -22,4 +25,6 @@
 )
 
 (add-to-list 'auto-mode-alist '("\\<\\(models.py\\|views.py\\|feeds.py\\|sitemaps.py\\|admin.py\\|urls.py\\|settings.py\\|tests.py\\|assets.py\\)" . django-mode))
+
+(provide 'django-mode)
 ;; django-mode.el ends here
