@@ -59,12 +59,6 @@
 	    ))
 (add-hook 'django-mode-hook
 	  '(lambda ()
-	     (outline-minor-mode 1)
-	     (setq
-	      tab-width 4
-	      python-indent 4
-	      outline-regexp py-outline-regexp
-	      outline-level 'py-outline-level)
 	     (local-set-key "\C-c\C-t" 'django-insert-transpy)
 	     ))
 ;; this part ends here
