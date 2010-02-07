@@ -26,5 +26,48 @@
 
 (add-to-list 'auto-mode-alist '("\\<\\(models.py\\|views.py\\|feeds.py\\|sitemaps.py\\|admin.py\\|urls.py\\|settings.py\\|tests.py\\|assets.py\\)" . django-mode))
 
+;;
+;; a part from http://garage.pimentech.net/libcommonDjango_django_emacs/
+;; little modified
+
+(defun django-insert-trans (from to &optional buffer)
+  (interactive "*r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region from to)
+      (goto-char from)
+      (iso-iso2sgml from to)
+      (insert "{% trans \"")
+      (goto-char (point-max))
+      (insert "\" %}")
+      (point-max))))
+(defun django-insert-transpy (from to &optional buffer)
+  (interactive "*r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region from to)
+      (goto-char from)
+      (iso-iso2sgml from to)
+      (insert "_(")
+      (goto-char (point-max))
+      (insert ")")
+      (point-max))))
+(add-hook 'sgml-mode-hook
+	  (lambda ()
+	    (local-set-key "\C-c\C-t" 'django-insert-trans)
+	    (setq indent-tabs-mode nil)
+	    ))
+(add-hook 'django-mode-hook
+	  '(lambda ()
+	     (outline-minor-mode 1)
+	     (setq
+	      tab-width 4
+	      python-indent 4
+	      outline-regexp py-outline-regexp
+	      outline-level 'py-outline-level)
+	     (local-set-key "\C-c\C-t" 'django-insert-transpy)
+	     ))
+;; this part ends here
+
 (provide 'django-mode)
 ;; django-mode.el ends here
