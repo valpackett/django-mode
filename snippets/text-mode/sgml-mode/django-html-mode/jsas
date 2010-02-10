@@ -1,0 +1,5 @@
+# -*- coding: utf-8 -*-
+# name: jsas
+# contributor: MyFreeWeb
+# --
+{% assets "${1:js_main}" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
