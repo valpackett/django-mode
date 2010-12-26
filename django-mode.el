@@ -17,16 +17,14 @@
 
 (define-derived-mode django-mode python-mode "Django" "Major mode for Django web framework.")
 (add-hook 'django-mode-hook
-	  (lambda ()
-	    (font-lock-add-keywords nil
-				    '(("\\<\\(django\\|models\\|request\\)" 1 font-lock-type-face)
-				      ("\\<\\(get_list_or_404\\|get_object_or_404\\|redirect\\|render_to_response\\)" . font-lock-builtin-face))
-				    ))
-)
+          (lambda ()
+            (font-lock-add-keywords nil
+                                    '(("\\<\\(django\\|models\\|request\\)" 1 font-lock-type-face)
+                                      ("\\<\\(get_list_or_404\\|get_object_or_404\\|redirect\\|render_to_response\\)" . font-lock-builtin-face))
+                                    )))
 
 (add-to-list 'auto-mode-alist '("\\<\\(models.py\\|views.py\\|handlers.py\\|feeds.py\\|sitemaps.py\\|admin.py\\|urls.py\\|settings.py\\|tests.py\\|assets.py\\)" . django-mode))
 
-;;
 ;; a part from http://garage.pimentech.net/libcommonDjango_django_emacs/
 ;; little modified
 
@@ -52,15 +50,15 @@
       (goto-char (point-max))
       (insert ")")
       (point-max))))
-(add-hook 'sgml-mode-hook
-	  (lambda ()
-	    (local-set-key "\C-c\C-t" 'django-insert-trans)
-	    (setq indent-tabs-mode nil)
-	    ))
+(add-hook 'nxml-mode-hook
+          (lambda ()
+            (local-set-key "\C-c\C-t" 'django-insert-trans)
+            (setq indent-tabs-mode nil)
+            ))
 (add-hook 'django-mode-hook
-	  '(lambda ()
-	     (local-set-key "\C-c\C-t" 'django-insert-transpy)
-	     ))
+          '(lambda ()
+             (local-set-key "\C-c\C-t" 'django-insert-transpy)
+             ))
 ;; this part ends here
 
 (provide 'django-mode)

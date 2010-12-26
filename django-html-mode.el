@@ -3,19 +3,20 @@
 ;; Author: Eduardo de Oliviera Padoan <edcrypt@gmail.com>
 ;;	Michael J. Korman <mike@mkorman.org>
 ;;  Török Gábor <gabor@20y.hu>
+;;  MyFreeWeb <me@myfreeweb.ru>
 ;;  Unknown Original Author
 ;; Keywords: languages
 
 ;;; Commentary:
 ;;
-;; This django-html-mode is mainly derived from html-mode.
+;; This django-html-mode is mainly derived from nxml-mode.
 
 ;;; History:
 ;;
 
 ;; TODO: Make comment-region work with Django comments instead of HTML comments
 
-(require 'sgml-mode)
+(require 'nxml-mode)
 
 ;;; Code:
 (defgroup django-html nil
@@ -93,9 +94,9 @@
 
    `(;; comment
      (,(rx (eval django-html-open-comment)
-              (1+ space)
-              (0+ (not (any "#")))
-              (1+ space)
+           (1+ space)
+           (0+ (not (any "#")))
+           (1+ space)
            (eval django-html-close-comment))
       . font-lock-comment-face)
 
@@ -120,7 +121,7 @@
      (,(rx (eval django-html-open-block)
            (1+ space)
            (group (and "end"
-                        ;; end prefix keywords
+                       ;; end prefix keywords
                        (or "autoescape" "block" "blocktrans" "cache" "comment"
                            "filter" "for" "if" "ifchanged" "ifequal"
                            "ifnotequal" "spaceless" "trans" "with")))
@@ -199,7 +200,7 @@
    django-html-close-block))
 
 ;;;###autoload
-(define-derived-mode django-html-mode html-mode  "django-html"
+(define-derived-mode django-html-mode nxml-mode  "django-html"
   "Major mode for editing Django html templates (.djhtml).
 
 \\{django-html-mode-map}"
@@ -213,9 +214,8 @@
           django-html-font-lock-keywords-3)
          nil t nil nil
          (font-lock-syntactic-keywords
-          . sgml-font-lock-syntactic-keywords))))
+          . nxml-font-lock-keywords))))
 
-(add-to-list 'auto-mode-alist '("\\.djhtml$" . django-html-mode))
 
 (defun django-html-find-open-tag ()
   "Return open tag for closed template tag.
@@ -280,10 +280,10 @@ If tags are unbalanced, raise error."
           (read-string "item: ")
           (read-string "array: ")
           django-html-close-block) ?\n
-    _ ?\n
-    (when (y-or-n-p "\"empty\" clause? ")
-      (django-html-make-opening-tag "empty")) ?\n
-      (django-html-make-closing-tag "for"))
+          _ ?\n
+          (when (y-or-n-p "\"empty\" clause? ")
+            (django-html-make-opening-tag "empty")) ?\n
+            (django-html-make-closing-tag "for"))
 
 (define-skeleton django-html-if-template
   "Insert \"if\" template." nil
@@ -295,7 +295,7 @@ If tags are unbalanced, raise error."
   _ ?\n
   (when (y-or-n-p "\"else\" clause? ")
     (django-html-make-opening-tag "else")) ?\n
-  (django-html-make-closing-tag "if"))
+    (django-html-make-closing-tag "if"))
 
 (define-skeleton django-html-ifequal-template
   "Insert \"ifequal\" template." nil
@@ -304,10 +304,10 @@ If tags are unbalanced, raise error."
           (read-string "variable 1: ")
           (read-string "variable 2: ")
           django-html-close-block) ?\n
-  _ ?\n
-  (when (y-or-n-p "\"else\" clause? ")
-    (django-html-make-opening-tag "else")) ?\n
-  (django-html-make-closing-tag "ifequal"))
+          _ ?\n
+          (when (y-or-n-p "\"else\" clause? ")
+            (django-html-make-opening-tag "else")) ?\n
+            (django-html-make-closing-tag "ifequal"))
 
 (define-skeleton django-html-ifnotequal-template
   "Insert \"ifnotequal\" template." nil
@@ -316,10 +316,10 @@ If tags are unbalanced, raise error."
           (read-string "variable 1: ")
           (read-string "variable 2: ")
           django-html-close-block) ?\n
-  _ ?\n
-  (when (y-or-n-p "\"else\" clause? ")
-    (django-html-make-opening-tag "else")) ?\n
-  (django-html-make-closing-tag "ifnotequal"))
+          _ ?\n
+          (when (y-or-n-p "\"else\" clause? ")
+            (django-html-make-opening-tag "else")) ?\n
+            (django-html-make-closing-tag "ifnotequal"))
 
 (define-skeleton django-html-include-template
   "Insert \"include\" template." nil
@@ -383,8 +383,8 @@ If tags are unbalanced, raise error."
             django-html-open-block
             block-name
             django-html-close-block)) ?\n
-  _ ?\n
-  (django-html-make-closing-tag "block"))
+            _ ?\n
+            (django-html-make-closing-tag "block"))
 
 (define-skeleton django-html-cycle-template
   "Insert \"cycle\" template." nil
