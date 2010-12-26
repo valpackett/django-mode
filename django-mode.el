@@ -14,7 +14,6 @@
 ;;   limitations under the License.
 
 (require 'python-mode)
-(require 'nxml-mode)
 
 (setq django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
 ?"
@@ -70,18 +69,6 @@
 
 ;; A part from http://garage.pimentech.net/libcommonDjango_django_emacs/
 ;; Modified a little
-
-(defun django-insert-trans (from to &optional buffer)
-  (interactive "*r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region from to)
-      (goto-char from)
-      (iso-iso2sgml from to)
-      (insert "{% trans \"")
-      (goto-char (point-max))
-      (insert "\" %}")
-      (point-max))))
 (defun django-insert-transpy (from to &optional buffer)
   (interactive "*r")
   (save-excursion
@@ -93,13 +80,7 @@
       (goto-char (point-max))
       (insert ")")
       (point-max))))
-(define-key django-html-mode-map (kbd "C-t")
-  (lambda ()
-    (django-insert-trans)
-    (setq indent-tabs-mode nil)
-    ))
 (define-key django-mode-map (kbd "C-t") 'django-insert-transpy)
-
 ;; This part ends here
 
 (provide 'django-mode)

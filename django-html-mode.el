@@ -206,7 +206,7 @@
 \\{django-html-mode-map}"
   :group 'django-html
 
-  ;; it mainly from sgml-mode font lock setting
+  ;; it mainly from nxml-mode font lock setting
   (set (make-local-variable 'font-lock-defaults)
        '((django-html-font-lock-keywords
           django-html-font-lock-keywords-1
@@ -216,6 +216,7 @@
          (font-lock-syntactic-keywords
           . nxml-font-lock-keywords))))
 
+(add-hook 'django-html-mode-hook (lambda () (setq indent-tabs-mode nil)))
 
 (defun django-html-find-open-tag ()
   "Return open tag for closed template tag.
@@ -481,6 +482,23 @@ If tags are unbalanced, raise error."
      ["with" django-html-with-template t])))
 
 (easy-menu-add django-html-menu django-html-mode-map)
+
+;; A part from http://garage.pimentech.net/libcommonDjango_django_emacs/
+;; Modified a little
+(defun django-insert-trans (from to &optional buffer)
+  (interactive "*r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region from to)
+      (goto-char from)
+      (iso-iso2sgml from to)
+      (insert "{% trans \"")
+      (goto-char (point-max))
+      (insert "\" %}")
+      (point-max))))
+(define-key django-html-mode-map (kbd "C-t") 'django-insert-trans)
+
+;; This part ends here
 
 (provide 'django-html-mode)
 
