@@ -16,6 +16,8 @@
 (require 'python-mode)
 
 (setq django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
+?"
+      django-view-regexp ".*(.+, ?['\"]\\([^'\",]+\\)['\"].*).*
 ?")
 
 (defun django-root (&optional dir home)
@@ -38,11 +40,21 @@
           (find-file appfname)
         (find-file projfname)))))
 
+(defun django-jump-to-view ()
+  (interactive)
+  (let ((vname (replace-regexp-in-string django-view-regexp "\\1" (thing-at-point 'line))))
+    (find-file (concat default-directory "views.py"))
+    (set-text-properties 0 (length vname) nil vname)
+    (re-search-forward (concat vname "(.*):
+"))))
+
 (defun django-jump ()
   (interactive)
   ;; TODO: add more stuff - models, urls, etc
   (if (string-match django-template-regexp (thing-at-point 'line))
-      (django-jump-to-template)))
+      (django-jump-to-template))
+  (if (string-match django-view-regexp (thing-at-point 'line))
+      (django-jump-to-view)))
 
 (define-derived-mode django-mode python-mode "Django" "Major mode for Django web framework.")
 (define-key django-mode-map (kbd "C-x j") 'django-jump)
