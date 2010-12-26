@@ -13,3 +13,6 @@ Django-mode supports jumping to:
 
 - templates, eg. `render_to_response('some.html')` will open some.html. (it supports `@render_to` from [annoying](http://bitbucket.org/offline/django-annoying), classic `render_to_response` and the new 1.3 `TemplateResponse`)
 - views (from urls.py), urls.py and views.py must be in the same directory (no global urls.py for all apps, it's a bad practice after all!)
+
+## Inserting translation marks ##
+Select a string you want to translate and press `C-t`. This works in both Python and templates.

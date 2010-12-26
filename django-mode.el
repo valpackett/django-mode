@@ -14,6 +14,7 @@
 ;;   limitations under the License.
 
 (require 'python-mode)
+(require 'nxml-mode)
 
 (setq django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
 ?"
@@ -67,8 +68,8 @@
 
 (add-to-list 'auto-mode-alist '("\\<\\(models\\|views\\|handlers\\|feeds\\|sitemaps\\|admin\\|context_processors\\|urls\\|settings\\|tests\\|assets\\|forms\\).py" . django-mode))
 
-;; a part from http://garage.pimentech.net/libcommonDjango_django_emacs/
-;; little modified
+;; A part from http://garage.pimentech.net/libcommonDjango_django_emacs/
+;; Modified a little
 
 (defun django-insert-trans (from to &optional buffer)
   (interactive "*r")
@@ -92,16 +93,14 @@
       (goto-char (point-max))
       (insert ")")
       (point-max))))
-(add-hook 'nxml-mode-hook
-          (lambda ()
-            (local-set-key "\C-c\C-t" 'django-insert-trans)
-            (setq indent-tabs-mode nil)
-            ))
-(add-hook 'django-mode-hook
-          '(lambda ()
-             (local-set-key "\C-c\C-t" 'django-insert-transpy)
-             ))
-;; this part ends here
+(define-key django-html-mode-map (kbd "C-t")
+  (lambda ()
+    (django-insert-trans)
+    (setq indent-tabs-mode nil)
+    ))
+(define-key django-mode-map (kbd "C-t") 'django-insert-transpy)
+
+;; This part ends here
 
 (provide 'django-mode)
 ;; django-mode.el ends here
