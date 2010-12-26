@@ -16,3 +16,11 @@ Django-mode supports jumping to:
 
 ## Inserting translation marks ##
 Select a string you want to translate and press `C-t`. This works in both Python and templates.
+
+## Running management commands ##
+Check out the Django menu :)
+BTW, default keybindings:
+- `C-c t` runs tests
+- `C-c s` runs syncdb
+- `C-c a` creates an app (asking for a name first)
+- `C-c m` asks you for a command to run
