@@ -75,22 +75,9 @@
 (defconst django-html-close-variable "}}"
   "End keyword for template variables.")
 
-(defconst django-html-font-lock-keywords-1
+(defconst django-html-font-lock-keywords-
   (append
-   ;; html-mode keyword
-   sgml-font-lock-keywords-1)
-
-  "First level keyword highlighting.")
-
-(defconst django-html-font-lock-keywords-2
-  (append
-   django-html-font-lock-keywords-1
-   sgml-font-lock-keywords-2))
-
-(defconst django-html-font-lock-keywords-3
-  (append
-   django-html-font-lock-keywords-1
-   django-html-font-lock-keywords-2
+   nxml-font-lock-keywords
 
    `(;; comment
      (,(rx (eval django-html-open-comment)
@@ -168,9 +155,6 @@
       (1 font-lock-variable-name-face) (2 font-lock-keyword-face)
       (3 font-lock-variable-name-face) (4 font-lock-keyword-face)))))
 
-(defvar django-html-font-lock-keywords
-  django-html-font-lock-keywords-1)
-
 (defvar django-html-mode-syntax-table
   (let ((django-html-mode-syntax-table (make-syntax-table)))
     django-html-mode-syntax-table)
@@ -208,10 +192,7 @@
 
   ;; it mainly from nxml-mode font lock setting
   (set (make-local-variable 'font-lock-defaults)
-       '((django-html-font-lock-keywords
-          django-html-font-lock-keywords-1
-          django-html-font-lock-keywords-2
-          django-html-font-lock-keywords-3)
+       '((django-html-font-lock-keywords)
          nil t nil nil
          (font-lock-syntactic-keywords
           . nxml-font-lock-keywords))))
