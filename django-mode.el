@@ -15,7 +15,37 @@
 
 (require 'python-mode)
 
+(setq django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
+?")
+
+(defun django-root (&optional dir home)
+  ;; Copied from Rinari and modified accordingly.
+  (or dir (setq dir default-directory))
+  (if (and (file-exists-p (expand-file-name "settings.py" dir))
+           (file-exists-p (expand-file-name "manage.py" dir)))
+      dir
+    (let ((new-dir (expand-file-name (file-name-as-directory "..") dir)))
+      ;; regexp to match windows roots, tramp roots, or regular posix roots
+      (unless (string-match "\\(^[[:alpha:]]:/$\\|^/[^\/]+:\\|^/$\\)" dir)
+        (django-root new-dir)))))
+
+(defun django-jump-to-template ()
+  (interactive)
+  (let ((fname (replace-regexp-in-string django-template-regexp "\\2" (thing-at-point 'line))))
+    (let ((projfname (concat (django-root) "templates/" fname))
+          (appfname (concat default-directory "templates/" fname)))
+      (if (file-exists-p appfname)
+          (find-file appfname)
+        (find-file projfname)))))
+
+(defun django-jump ()
+  (interactive)
+  ;; TODO: add more stuff - models, urls, etc
+  (if (string-match django-template-regexp (thing-at-point 'line))
+      (django-jump-to-template)))
+
 (define-derived-mode django-mode python-mode "Django" "Major mode for Django web framework.")
+(define-key django-mode-map (kbd "C-x j") 'django-jump)
 (add-hook 'django-mode-hook
           (lambda ()
             (font-lock-add-keywords nil
@@ -23,7 +53,7 @@
                                       ("\\<\\(get_list_or_404\\|get_object_or_404\\|redirect\\|render_to_response\\)" . font-lock-builtin-face))
                                     )))
 
-(add-to-list 'auto-mode-alist '("\\<\\(models.py\\|views.py\\|handlers.py\\|feeds.py\\|sitemaps.py\\|admin.py\\|urls.py\\|settings.py\\|tests.py\\|assets.py\\)" . django-mode))
+(add-to-list 'auto-mode-alist '("\\<\\(models\\|views\\|handlers\\|feeds\\|sitemaps\\|admin\\|context_processors\\|urls\\|settings\\|tests\\|assets\\|forms\\).py" . django-mode))
 
 ;; a part from http://garage.pimentech.net/libcommonDjango_django_emacs/
 ;; little modified
