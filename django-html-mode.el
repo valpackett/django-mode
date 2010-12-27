@@ -75,7 +75,7 @@
 (defconst django-html-close-variable "}}"
   "End keyword for template variables.")
 
-(defconst django-html-font-lock-keywords-
+(defconst django-html-font-lock-keywords
   (append
    nxml-font-lock-keywords
 
