@@ -26,6 +26,8 @@
 (setq django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
 ?"
       django-view-regexp ".*(.+, ?['\"]\\([^'\",]+\\)['\"].*).*
+?"
+      django-model-regexp "^[^.]* \\([^.,]+\\)\\(.objects\\|(\\).*
 ?")
 
 (defun django-root (&optional dir home)
@@ -56,13 +58,21 @@
     (re-search-forward (concat vname "(.*):
 "))))
 
+(defun django-jump-to-model ()
+  (interactive)
+  (let ((mname (replace-regexp-in-string django-model-regexp "\\1" (thing-at-point 'line))))
+    (find-file (concat default-directory "models.py"))
+    (re-search-forward (concat mname "(.*):
+"))))
+
 (defun django-jump ()
   (interactive)
-  ;; TODO: add models
   (if (string-match django-template-regexp (thing-at-point 'line))
       (django-jump-to-template))
   (if (string-match django-view-regexp (thing-at-point 'line))
-      (django-jump-to-view)))
+      (django-jump-to-view))
+  (if (string-match django-model-regexp (thing-at-point 'line))
+      (django-jump-to-model)))
 
 (defun django-manage (command)
   (interactive "sCommand:")
