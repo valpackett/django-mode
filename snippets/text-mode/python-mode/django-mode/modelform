@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # name: model
-# contributor: MyFreeWeb, Brandon Height <bmheight@gmail.com>
+# contributor: Brandon Height <bmheight@gmail.com>
 # --
 class ${1:MyModelForm}(ModelForm):
     class Meta:
