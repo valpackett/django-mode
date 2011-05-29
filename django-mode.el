@@ -21,7 +21,11 @@
 
 ;;; Code:
 
-(require 'python-mode)
+(condition-case nil
+    (require 'python)
+  (error
+   (require 'python-mode)))
+
 
 (setq django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
 ?"
