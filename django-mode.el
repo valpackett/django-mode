@@ -78,9 +78,13 @@
   (if (string-match django-model-regexp (thing-at-point 'line))
       (django-jump-to-model)))
 
+
+(defun django-python-command ()
+  (mapconcat 'identity (cons python-python-command python-python-command-args) " "))
+
 (defun django-manage (command)
   (interactive "sCommand:")
-  (compile (concat "python " (django-root) "manage.py " command)))
+  (compile (concat (django-python-command) " " (django-root) "manage.py " command)))
 
 (defun django-syncdb ()
   (interactive)
@@ -120,11 +124,11 @@
 
 (defun django-shell ()
   (interactive)
-  (term (concat "python " (django-root) "manage.py shell")))
+  (term (concat (django-python-command) " " (django-root) "manage.py shell")))
 
 (defun django-dbshell ()
   (interactive)
-  (term (concat "python " (django-root) "manage.py dbshell")))
+  (term (concat (django-python-command) " " (django-root) "manage.py dbshell")))
 
 (defun django-insert-transpy (from to &optional buffer)
   ;; From http://garage.pimentech.net/libcommonDjango_django_emacs/
