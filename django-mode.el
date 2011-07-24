@@ -154,7 +154,7 @@
 (add-hook 'django-mode-hook
           (lambda ()
             (font-lock-add-keywords nil
-                                    '(("\\<\\(django\\|models\\|request\\)" 1 font-lock-type-face)
+                                    '(("\\<\\(django\\|models\\|forms\\|request\\)" 1 font-lock-type-face)
                                       ("\\<\\(get_list_or_404\\|get_object_or_404\\|redirect\\|render_to_response\\)" . font-lock-builtin-face))
                                     )))
 
