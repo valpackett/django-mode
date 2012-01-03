@@ -154,8 +154,8 @@
 (add-hook 'django-mode-hook
           (lambda ()
             (font-lock-add-keywords nil
-                                    '(("\\<\\(django\\|models\\|forms\\|request\\)" 1 font-lock-type-face)
-                                      ("\\<\\(get_list_or_404\\|get_object_or_404\\|redirect\\|render_to_response\\)" . font-lock-builtin-face))
+                                    '(("\\<\\(django\\|models\\|forms\\|request\\)\\>" 1 font-lock-type-face)
+                                      ("\\<\\(get_list_or_404\\|get_object_or_404\\|redirect\\|render_to_response\\)\\>" . font-lock-builtin-face))
                                     )))
 
 (easy-menu-define django-menu django-mode-map "Django menu"
