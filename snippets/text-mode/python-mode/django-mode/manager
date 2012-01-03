@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# name: model
+# key: manager
+# name: manager
 # contributor: Brandon Height <bmheight@gmail.com>
 # --
 class ${1:MyModelManager}(models.Manager):
