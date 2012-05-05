@@ -3,7 +3,7 @@
 ;; Author: Eduardo de Oliviera Padoan <edcrypt@gmail.com>
 ;;	Michael J. Korman <mike@mkorman.org>
 ;;  Török Gábor <gabor@20y.hu>
-;;  MyFreeWeb <me@myfreeweb.ru>
+;;  Greg V <floatboth@me.com>
 ;;  Unknown Original Author
 ;; Keywords: languages
 
