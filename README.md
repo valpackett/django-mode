@@ -5,7 +5,7 @@
 1. Install [yasnippet](http://code.google.com/p/yasnippet/)
 2. Add something like this to your Emacs config:
 
-```elisp
+```lisp
 (require 'django-html-mode)
 (require 'django-mode)
 (yas/load-directory "path-to/django-mode/snippets")
