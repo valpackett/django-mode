@@ -1,8 +1,8 @@
 ;;; django-mode.el --- Major mode for Django web framework.
 
-;; Copyright (C) 2010 MyFreeWeb
+;; Copyright (C) 2010-2012 Greg V
 
-;; Author: MyFreeWeb <me@myfreeweb.ru>
+;; Author: Greg V <floatboth@me.com>
 ;; Keywords: languages
 
 ;; This file is NOT part of GNU Emacs.
