@@ -1,14 +1,16 @@
-# Django mode for Emacs [![Maintainer Status](http://stillmaintained.com/myfreeweb/django-mode.png)](http://stillmaintained.com/myfreeweb/django-mode)
+# Django mode for Emacs
 
 ## How to install
 
 1. Install [yasnippet](http://code.google.com/p/yasnippet/)
 2. Add something like this to your Emacs config:
+
 ```elisp
 (require 'django-html-mode)
 (require 'django-mode)
 (yas/load-directory "path-to/django-mode/snippets")
-(add-to-list 'auto-mode-alist '("\\.djhtml$" . django-html-mode))```
+(add-to-list 'auto-mode-alist '("\\.djhtml$" . django-html-mode))
+```
 
 ## Jumping
 Move your cursor to a line that contains the thing you want to go and press `C-x j`.
