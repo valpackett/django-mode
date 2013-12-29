@@ -479,6 +479,9 @@ If tags are unbalanced, raise error."
       (point-max))))
 (define-key django-html-mode-map (kbd "C-t") 'django-insert-trans)
 
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.djhtml$" . django-html-mode))
+
 ;; This part ends here
 
 (provide 'django-html-mode)
