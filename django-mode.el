@@ -144,6 +144,7 @@
       (insert ")")
       (point-max))))
 
+;;;###autoload
 (define-derived-mode django-mode python-mode "Django" "Major mode for Django web framework.")
 (define-key django-mode-map (kbd "C-t") 'django-insert-transpy)
 (define-key django-mode-map (kbd "C-x j") 'django-jump)
@@ -178,6 +179,7 @@
 
 (easy-menu-add django-menu django-mode-map)
 
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\<\\(models\\|views\\|handlers\\|feeds\\|sitemaps\\|admin\\|context_processors\\|urls\\|settings\\|tests\\|assets\\|forms\\).py" . django-mode))
 
 (provide 'django-mode)
