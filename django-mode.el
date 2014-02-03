@@ -80,7 +80,9 @@
 
 
 (defun django-python-command ()
-  (mapconcat 'identity (cons python-python-command python-python-command-args) " "))
+  (if (boundp 'python-shell-interpreter)
+      (concat python-shell-interpreter " " python-shell-interpreter-args)
+    (mapconcat 'identity (cons python-python-command python-python-command-args) " ")))
 
 (defun django-manage (command)
   (interactive "sCommand:")
