@@ -26,12 +26,13 @@
   (error
    (require 'python-mode)))
 
+(defvar django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
+?")
 
-(setq django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
-?"
-      django-view-regexp ".*(.+, ?['\"]\\([^'\",]+\\)['\"].*).*
-?"
-      django-model-regexp "^[^.]* \\([^.,]+\\)\\(.objects\\|(\\).*
+(defvar django-view-regexp ".*(.+, ?['\"]\\([^'\",]+\\)['\"].*).*
+?")
+
+(defvar django-model-regexp "^[^.]* \\([^.,]+\\)\\(.objects\\|(\\).*
 ?")
 
 (defun django-root (&optional dir home)
