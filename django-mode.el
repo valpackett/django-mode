@@ -4,6 +4,7 @@
 
 ;; Author: Greg V <floatboth@me.com>
 ;; Keywords: languages
+;; Package-Requires: ((projectile "0") (s "0"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -26,6 +27,9 @@
   (error
    (require 'python-mode)))
 
+(require 'projectile)
+(require 's)
+
 (defvar django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
 ?")
 
@@ -37,6 +41,7 @@
 
 (defun django-root (&optional dir home)
   ;; Copied from Rinari and modified accordingly.
+  ;TODO: replace straight with projectile-project-root ?
   (or dir (setq dir default-directory))
   (if (and (file-exists-p (expand-file-name "settings.py" dir))
            (file-exists-p (expand-file-name "manage.py" dir)))
@@ -45,6 +50,7 @@
       ;; regexp to match windows roots, tramp roots, or regular posix roots
       (unless (string-match "\\(^[[:alpha:]]:/$\\|^/[^\/]+:\\|^/$\\)" dir)
         (django-root new-dir)))))
+      )
 
 (defun django-jump-to-template ()
   (interactive)
@@ -85,9 +91,34 @@
       (concat python-shell-interpreter " " python-shell-interpreter-args)
     (mapconcat 'identity (cons python-python-command python-python-command-args) " ")))
 
+(defun django-get-commands ()
+  "Get a list of all available commands, including the ones coming from
+  extensions, by reading the output of manage.py -h"
+  (let* ((help-output (shell-command-to-string (concat "python " (projectile-project-root) "manage.py -h")))
+         (commands-block
+          (with-temp-buffer
+            (progn
+              (insert help-output)
+              (beginning-of-buffer)
+              ;; Delete help header
+              (delete-region (point) (search-forward "Available subcommands:" nil nil nil))
+              ;; Delete section names, in brackets like [auth]
+              (beginning-of-buffer)
+              (save-excursion
+                (replace-regexp "\\[.*\\]" ""))
+              (buffer-string))))
+         (commands-list (s-split "\n" commands-block))
+         (commands-list (-remove (lambda (x) (string= x "")) commands-list))
+         (commands-list (mapcar (lambda (x) (s-trim x)) commands-list)))
+    (sort commands-list 'string-lessp)))
+
 (defun django-manage (command)
-  (interactive "sCommand:")
-  (compile (concat (django-python-command) " " (django-root) "manage.py " command)))
+  "Ask for a command, with ido completion. We can edit it after the
+   choice. Run with python-shell-interpreter."
+  (interactive (list (ido-completing-read "Command... " (django-get-commands) nil nil)))
+  ;; Edit the command.
+  (let ((command (read-shell-command "Run command like this: " command)))
+    (compile (concat (django-python-command) " " (django-root) "manage.py " command))))
 
 (defun django-syncdb ()
   (interactive)
