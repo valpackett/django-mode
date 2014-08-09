@@ -26,6 +26,8 @@
   (error
    (require 'python-mode)))
 
+(require 's)
+
 (defvar django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
 ?")
 
@@ -37,14 +39,17 @@
 
 (defun django-root (&optional dir home)
   ;; Copied from Rinari and modified accordingly.
-  (or dir (setq dir default-directory))
-  (if (and (file-exists-p (expand-file-name "settings.py" dir))
-           (file-exists-p (expand-file-name "manage.py" dir)))
-      dir
-    (let ((new-dir (expand-file-name (file-name-as-directory "..") dir)))
-      ;; regexp to match windows roots, tramp roots, or regular posix roots
-      (unless (string-match "\\(^[[:alpha:]]:/$\\|^/[^\/]+:\\|^/$\\)" dir)
-        (django-root new-dir)))))
+  (projectile-project-root)
+
+  ;; (or dir (setq dir default-directory))
+  ;; (if (and (file-exists-p (expand-file-name "settings.py" dir))
+           ;; (file-exists-p (expand-file-name "manage.py" dir)))
+      ;; dir
+    ;; (let ((new-dir (expand-file-name (file-name-as-directory "..") dir)))
+      regexp to match windows roots, tramp roots, or regular posix roots
+      ;; (unless (string-match "\\(^[[:alpha:]]:/$\\|^/[^\/]+:\\|^/$\\)" dir)
+        ;; (django-root new-dir)))))
+      )
 
 (defun django-jump-to-template ()
   (interactive)
@@ -85,8 +90,37 @@
       (concat python-shell-interpreter " " python-shell-interpreter-args)
     (mapconcat 'identity (cons python-python-command python-python-command-args) " ")))
 
+(defun django-get-commands ()
+  (cd-absolute (projectile-project-root)) ;; TODO: don't do this
+
+         (let ( (help-output (shell-command-to-string "python manage.py -h")) )
+          (setq dj-commands-str (with-temp-buffer (progn
+                               (insert help-output)
+                               (beginning-of-buffer)
+                               (delete-region (point) (search-forward "Available subcommands:" nil nil nil))
+                               ;; cleanup [auth] and stuff
+                               (beginning-of-buffer)
+                               (save-excursion
+                               (replace-regexp "\\[.*\\]" ""))
+                               (buffer-string)
+                               )))
+          ;; get a list of commands from the output of manage.py -h
+          ;; What would be the pattern to optimize this ?
+          (setq dj-commands-str (s-split "\n" dj-commands-str))
+          (setq dj-commands-str (-remove (lambda (x) (string= x "")) dj-commands-str))
+          (setq dj-commands-str (mapcar (lambda (x) (s-trim x)) dj-commands-str))
+          (sort dj-commands-str 'string-lessp)
+           )
+         )
+
+;; TODO: can only be initialized in a django project.
+(defvar django-command-list (django-get-commands))
+
 (defun django-manage (command)
-  (interactive "sCommand:")
+  ;; nil nil: enable user to exit with any command. Still, he can not edit a completed choice.
+  (interactive (list (completing-read "Command... " django-command-list nil nil)))
+  ;; Now ask to edit the command. How to do the two actions at once ?
+  (setq command (read-shell-command "Run command like this: " command))
   (compile (concat (django-python-command) " " (django-root) "manage.py " command)))
 
 (defun django-syncdb ()
