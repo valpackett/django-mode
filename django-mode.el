@@ -46,7 +46,7 @@
            ;; (file-exists-p (expand-file-name "manage.py" dir)))
       ;; dir
     ;; (let ((new-dir (expand-file-name (file-name-as-directory "..") dir)))
-      regexp to match windows roots, tramp roots, or regular posix roots
+      ;; regexp to match windows roots, tramp roots, or regular posix roots
       ;; (unless (string-match "\\(^[[:alpha:]]:/$\\|^/[^\/]+:\\|^/$\\)" dir)
         ;; (django-root new-dir)))))
       )
@@ -122,6 +122,34 @@
   ;; Now ask to edit the command. How to do the two actions at once ?
   (setq command (read-shell-command "Run command like this: " command))
   (compile (concat (django-python-command) " " (django-root) "manage.py " command)))
+
+(defun django-get-make-commands ()
+  "Extract the commands from the Makefile."
+  (cd-absolute (django-root))  ;; TODO: I don't like it
+  (with-temp-buffer
+    (progn
+      (insert-file-contents "Makefile")
+  (save-restriction
+    (setq dj-results '())               ; don't use global variables TODO:
+    (goto-char 1)
+    (let ((case-fold-search nil))
+      (setq dj-results '())
+      (while (search-forward-regexp "^[a-z0-9]+" nil t) ;; regexp is weak
+        (progn
+          (if (null dj-results) (setq dj-results (list (match-string 0)))
+          (setq dj-results (cons (match-string 0) dj-results)))
+
+        ))
+      dj-results)))
+))
+
+(defun django-make (command)
+  "Suggest make commands to run, based on a simple parsing of the Makefile."
+  (interactive (list (ido-completing-read "make: " (django-get-make-commands))))
+  (cd-absolute (django-root))           ;; TODO: I don't like absolute cd.
+  (compile (concat "make" " " command))
+)
+
 
 (defun django-syncdb ()
   (interactive)
