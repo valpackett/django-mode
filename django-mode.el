@@ -150,6 +150,26 @@
   (compile (concat "make" " " command))
 )
 
+;; Dynamic menu to list the make commands.
+(easy-menu-define django--make-menu global-map "Django make"
+  '("Django make"))
+
+
+(defun django--get-menu ()
+  (easy-menu-create-menu
+   "Django make"
+   (mapcar (lambda (command)
+             (vector  command
+                     `(lambda () (interactive) (compile (concat "make" " " ,command)) t)))
+           (django-get-make-commands))))
+
+(easy-menu-add-item django--make-menu '() (django--get-menu))
+
+(defun django--update-menu ()
+  (easy-menu-add-item django--make-menu '() (django--get-menu)))
+
+(add-hook 'menu-bar-update-hook 'django--update-menu)
+
 
 (defun django-syncdb ()
   (interactive)
