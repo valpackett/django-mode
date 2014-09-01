@@ -92,7 +92,8 @@
 
 (defun django-get-commands ()
   (cd-absolute (projectile-project-root)) ;; TODO: don't do this
-
+  (if (file-exists-p "manage.py")
+      (progn
          (let ( (help-output (shell-command-to-string "python manage.py -h")) )
           (setq dj-commands-str (with-temp-buffer (progn
                                (insert help-output)
@@ -101,17 +102,20 @@
                                ;; cleanup [auth] and stuff
                                (beginning-of-buffer)
                                (save-excursion
-                               (replace-regexp "\\[.*\\]" ""))
+                               (replace-regexp "\\[.*\\]" ""))  ;; the message "replaced x occurences" is annoying.
                                (buffer-string)
                                )))
           ;; get a list of commands from the output of manage.py -h
           ;; What would be the pattern to optimize this ?
+          (message "updated manage.py commands.") ;; called quite often.
           (setq dj-commands-str (s-split "\n" dj-commands-str))
           (setq dj-commands-str (-remove (lambda (x) (string= x "")) dj-commands-str))
           (setq dj-commands-str (mapcar (lambda (x) (s-trim x)) dj-commands-str))
           (sort dj-commands-str 'string-lessp)
            )
          )
+      '()
+    ))
 
 ;; TODO: can only be initialized in a django project.
 (defvar django-command-list (django-get-commands))
@@ -150,7 +154,7 @@
   (compile (concat "make" " " command))
 )
 
-;; Dynamic menu to list the make commands.
+;; Dynamic menu to list the MAKE commands.
 (easy-menu-define django--make-menu global-map "Django make"
   '("Django make"))
 
@@ -169,6 +173,26 @@
   (easy-menu-add-item django--make-menu '() (django--get-menu)))
 
 (add-hook 'menu-bar-update-hook 'django--update-menu)
+
+
+;; menu for MANAGE.PY commands.
+(easy-menu-define django--manage-menu global-map "Django make"
+  '("Django manage"))
+
+(defun django--get-menu-manage ()
+  (easy-menu-create-menu
+   "manage..."
+   (mapcar (lambda (command)
+             (vector  command
+                     `(lambda () (interactive) (django-manage ,command) t)))
+           (django-get-commands))))
+
+(easy-menu-add-item django--manage-menu '() (django--get-menu-manage))
+
+(defun django--update-menu-manage ()
+  (easy-menu-add-item django--manage-menu '() (django--get-menu-manage)))
+
+(add-hook 'menu-bar-update-hook 'django--update-menu-manage)
 
 
 (defun django-syncdb ()
