@@ -128,6 +128,19 @@
   (setq command (read-shell-command "Run command like this: " command))
   (compile (concat (django-python-command) " " (django-root) "manage.py " command)))
 
+(defun django-run-in-shell (command)
+  "run the given command in a shell. Useful in development to use breakpoints."
+  (setq django-shell-buffer-name (format "*shell %s*" (projectile-project-name)))
+  (setq django-shell-buffer (get-buffer django-shell-buffer-name))
+  ;; TODO: open shell if needed
+  ;; stop shell execution if needed
+  (set-buffer django-shell-buffer)
+  (comint-kill-input)
+  (insert command)
+  (comint-send-input)
+)
+
+
 (defun django-get-make-commands ()
   "Extract the commands from the Makefile."
   (cd-absolute (django-root))  ;; TODO: I don't like it
