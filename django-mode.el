@@ -102,12 +102,13 @@
                                ;; cleanup [auth] and stuff
                                (beginning-of-buffer)
                                (save-excursion
-                               (replace-regexp "\\[.*\\]" ""))  ;; the message "replaced x occurences" is annoying.
+                                 (while (re-search-forward "\\[.*\\]" nil t)
+                                   (replace-match "" nil nil)))
                                (buffer-string)
                                )))
           ;; get a list of commands from the output of manage.py -h
           ;; What would be the pattern to optimize this ?
-          (message "updated manage.py commands.") ;; called quite often.
+          ;; (message "updated manage.py commands.") ;; called quite often.
           (setq dj-commands-str (s-split "\n" dj-commands-str))
           (setq dj-commands-str (-remove (lambda (x) (string= x "")) dj-commands-str))
           (setq dj-commands-str (mapcar (lambda (x) (s-trim x)) dj-commands-str))
