@@ -144,21 +144,24 @@
 (defun django-get-make-commands ()
   "Extract the commands from the Makefile."
   (cd-absolute (django-root))  ;; TODO: I don't like it
-  (with-temp-buffer
-    (progn
-      (insert-file-contents "Makefile")
-  (save-restriction
-    (setq dj-results '())               ; don't use global variables TODO:
-    (goto-char 1)
-    (let ((case-fold-search nil))
-      (setq dj-results '())
-      (while (search-forward-regexp "^[a-z0-9]+" nil t) ;; regexp is weak
-        (progn
-          (if (null dj-results) (setq dj-results (list (match-string 0)))
-          (setq dj-results (cons (match-string 0) dj-results)))
+  (if (file-exists-p "Makefile")
+      (progn
+        (with-temp-buffer
+          (progn
+            (insert-file-contents "Makefile")
+            (save-restriction
+              (setq dj-results '())               ; don't use global variables TODO:
+              (goto-char 1)
+              (let ((case-fold-search nil))
+                (setq dj-results '())
+                (while (search-forward-regexp "^[a-z0-9-]+" nil t) ;; regexp is weak
+                  (progn
+                    (if (null dj-results) (setq dj-results (list (match-string 0)))
+                      (setq dj-results (cons (match-string 0) dj-results)))
 
-        ))
-      dj-results)))
+                    ))
+                dj-results)))))
+    '("")  ;; not void or the detached menu would disappear. We could offer an option.
 ))
 
 (defun django-make (command)
