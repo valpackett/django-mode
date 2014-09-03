@@ -160,7 +160,7 @@
                       (setq dj-results (cons (match-string 0) dj-results)))
 
                     ))
-                dj-results)))))
+                (nreverse dj-results))))))
     '("")  ;; not void or the detached menu would disappear. We could offer an option.
 ))
 
