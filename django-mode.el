@@ -91,10 +91,9 @@
     (mapconcat 'identity (cons python-python-command python-python-command-args) " ")))
 
 (defun django-get-commands ()
-  (cd-absolute (projectile-project-root)) ;; TODO: don't do this
-  (if (file-exists-p "manage.py")
+  (if (file-exists-p (format "%s/manage.py" (django-root)))
       (progn
-         (let ( (help-output (shell-command-to-string "python manage.py -h")) )
+         (let ( (help-output (shell-command-to-string (format "cd %s && python manage.py -h" (django-root))) ))
           (setq dj-commands-str (with-temp-buffer (progn
                                (insert help-output)
                                (beginning-of-buffer)
@@ -108,7 +107,6 @@
                                )))
           ;; get a list of commands from the output of manage.py -h
           ;; What would be the pattern to optimize this ?
-          ;; (message "updated manage.py commands.") ;; called quite often.
           (setq dj-commands-str (s-split "\n" dj-commands-str))
           (setq dj-commands-str (-remove (lambda (x) (string= x "")) dj-commands-str))
           (setq dj-commands-str (mapcar (lambda (x) (s-trim x)) dj-commands-str))
@@ -122,11 +120,11 @@
 (defvar django-command-list (django-get-commands))
 
 (defun django-manage (command)
-  ;; nil nil: enable user to exit with any command. Still, he can not edit a completed choice.
-  (interactive (list (completing-read "Command... " django-command-list nil nil)))
-  ;; Now ask to edit the command. How to do the two actions at once ?
+  (interactive (list (completing-read "Command: " (django-get-commands))))
   (setq command (read-shell-command "Run command like this: " command))
-  (compile (concat (django-python-command) " " (django-root) "manage.py " command)))
+  (compile (format "cd %s && %s manage.py %s" (django-root) (django-python-command) command))
+)
+
 
 (defun django-run-in-shell (command)
   "run the given command in a shell. Useful in development to use breakpoints."
@@ -143,12 +141,11 @@
 
 (defun django-get-make-commands ()
   "Extract the commands from the Makefile."
-  (cd-absolute (django-root))  ;; TODO: I don't like it
-  (if (file-exists-p "Makefile")
+  (if (file-exists-p (format "%s/Makefile" (django-root)))
       (progn
         (with-temp-buffer
           (progn
-            (insert-file-contents "Makefile")
+            (insert-file-contents (format "%sMakefile" (django-root)))
             (save-restriction
               (setq dj-results '())               ; don't use global variables TODO:
               (goto-char 1)
@@ -167,21 +164,20 @@
 (defun django-make (command)
   "Suggest make commands to run, based on a simple parsing of the Makefile."
   (interactive (list (ido-completing-read "make: " (django-get-make-commands))))
-  (cd-absolute (django-root))           ;; TODO: I don't like absolute cd.
-  (compile (concat "make" " " command))
+  (compile (format "cd %s && make %s" (django-root) command))
 )
 
 ;; Dynamic menu to list the MAKE commands.
-(easy-menu-define django--make-menu global-map "Django make"
-  '("Django make"))
+(easy-menu-define django--make-menu global-map "Make"
+  '("Make"))
 
 
 (defun django--get-menu ()
   (easy-menu-create-menu
-   "Django make"
+   "Make"
    (mapcar (lambda (command)
              (vector  command
-                     `(lambda () (interactive) (compile (concat "make" " " ,command)) t)))
+                     `(lambda () (interactive) (compile (format "cd %s && make %s" (django-root) ,command)) t)))
            (django-get-make-commands))))
 
 (easy-menu-add-item django--make-menu '() (django--get-menu))
@@ -190,6 +186,9 @@
   (easy-menu-add-item django--make-menu '() (django--get-menu)))
 
 (add-hook 'menu-bar-update-hook 'django--update-menu)
+
+;; remove hook (with minor mode) with:
+;; (remove-hook 'menu-bar-update-hook 'django--update-menu)
 
 
 ;; menu for MANAGE.PY commands.
