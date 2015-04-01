@@ -26,6 +26,8 @@
   (error
    (require 'python-mode)))
 
+(require 's)
+
 (defvar django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
 ?")
 
@@ -37,14 +39,17 @@
 
 (defun django-root (&optional dir home)
   ;; Copied from Rinari and modified accordingly.
-  (or dir (setq dir default-directory))
-  (if (and (file-exists-p (expand-file-name "settings.py" dir))
-           (file-exists-p (expand-file-name "manage.py" dir)))
-      dir
-    (let ((new-dir (expand-file-name (file-name-as-directory "..") dir)))
+  (projectile-project-root)
+
+  ;; (or dir (setq dir default-directory))
+  ;; (if (and (file-exists-p (expand-file-name "settings.py" dir))
+           ;; (file-exists-p (expand-file-name "manage.py" dir)))
+      ;; dir
+    ;; (let ((new-dir (expand-file-name (file-name-as-directory "..") dir)))
       ;; regexp to match windows roots, tramp roots, or regular posix roots
-      (unless (string-match "\\(^[[:alpha:]]:/$\\|^/[^\/]+:\\|^/$\\)" dir)
-        (django-root new-dir)))))
+      ;; (unless (string-match "\\(^[[:alpha:]]:/$\\|^/[^\/]+:\\|^/$\\)" dir)
+        ;; (django-root new-dir)))))
+      )
 
 (defun django-jump-to-template ()
   (interactive)
@@ -85,9 +90,126 @@
       (concat python-shell-interpreter " " python-shell-interpreter-args)
     (mapconcat 'identity (cons python-python-command python-python-command-args) " ")))
 
+(defun django-get-commands ()
+  (if (file-exists-p (format "%s/manage.py" (django-root)))
+      (progn
+         (let ( (help-output (shell-command-to-string (format "cd %s && python manage.py -h" (django-root))) ))
+          (setq dj-commands-str (with-temp-buffer (progn
+                               (insert help-output)
+                               (beginning-of-buffer)
+                               (delete-region (point) (search-forward "Available subcommands:" nil nil nil))
+                               ;; cleanup [auth] and stuff
+                               (beginning-of-buffer)
+                               (save-excursion
+                                 (while (re-search-forward "\\[.*\\]" nil t)
+                                   (replace-match "" nil nil)))
+                               (buffer-string)
+                               )))
+          ;; get a list of commands from the output of manage.py -h
+          ;; What would be the pattern to optimize this ?
+          (setq dj-commands-str (s-split "\n" dj-commands-str))
+          (setq dj-commands-str (-remove (lambda (x) (string= x "")) dj-commands-str))
+          (setq dj-commands-str (mapcar (lambda (x) (s-trim x)) dj-commands-str))
+          (sort dj-commands-str 'string-lessp)
+           )
+         )
+      '()
+    ))
+
+;; TODO: can only be initialized in a django project.
+(defvar django-command-list (django-get-commands))
+
 (defun django-manage (command)
-  (interactive "sCommand:")
-  (compile (concat (django-python-command) " " (django-root) "manage.py " command)))
+  (interactive (list (completing-read "Command: " (django-get-commands))))
+  (setq command (read-shell-command "Run command like this: " command))
+  (compile (format "cd %s && %s manage.py %s" (django-root) (django-python-command) command))
+)
+
+
+(defun django-run-in-shell (command)
+  "run the given command in a shell. Useful in development to use breakpoints."
+  (setq django-shell-buffer-name (format "*shell %s*" (projectile-project-name)))
+  (setq django-shell-buffer (get-buffer django-shell-buffer-name))
+  ;; TODO: open shell if needed
+  ;; stop shell execution if needed
+  (set-buffer django-shell-buffer)
+  (comint-kill-input)
+  (insert command)
+  (comint-send-input)
+)
+
+
+(defun django-get-make-commands ()
+  "Extract the commands from the Makefile."
+  (if (file-exists-p (format "%s/Makefile" (django-root)))
+      (progn
+        (with-temp-buffer
+          (progn
+            (insert-file-contents (format "%sMakefile" (django-root)))
+            (save-restriction
+              (setq dj-results '())               ; don't use global variables TODO:
+              (goto-char 1)
+              (let ((case-fold-search nil))
+                (setq dj-results '())
+                (while (search-forward-regexp "^[a-z0-9-]+" nil t) ;; regexp is weak
+                  (progn
+                    (if (null dj-results) (setq dj-results (list (match-string 0)))
+                      (setq dj-results (cons (match-string 0) dj-results)))
+
+                    ))
+                (nreverse dj-results))))))
+    '("")  ;; not void or the detached menu would disappear. We could offer an option.
+))
+
+(defun django-make (command)
+  "Suggest make commands to run, based on a simple parsing of the Makefile."
+  (interactive (list (ido-completing-read "make: " (django-get-make-commands))))
+  (compile (format "cd %s && make %s" (django-root) command))
+)
+
+;; Dynamic menu to list the MAKE commands.
+(easy-menu-define django--make-menu global-map "Make"
+  '("Make"))
+
+
+(defun django--get-menu ()
+  (easy-menu-create-menu
+   "Make"
+   (mapcar (lambda (command)
+             (vector  command
+                     `(lambda () (interactive) (compile (format "cd %s && make %s" (django-root) ,command)) t)))
+           (django-get-make-commands))))
+
+(easy-menu-add-item django--make-menu '() (django--get-menu))
+
+(defun django--update-menu ()
+  (easy-menu-add-item django--make-menu '() (django--get-menu)))
+
+(add-hook 'menu-bar-update-hook 'django--update-menu)
+
+;; remove hook (with minor mode) with:
+;; (remove-hook 'menu-bar-update-hook 'django--update-menu)
+
+
+;; menu for MANAGE.PY commands.
+(easy-menu-define django--manage-menu global-map "Django make"
+  '("Django manage"))
+
+(defun django--get-menu-manage ()
+  (easy-menu-create-menu
+   "manage..."
+   (mapcar (lambda (command)
+             (vector  command
+                     `(lambda () (interactive) (django-manage ,command) t)))
+           (django-get-commands))))
+
+(easy-menu-add-item django--manage-menu '() (django--get-menu-manage))
+
+(defun django--update-menu-manage ()
+  (easy-menu-add-item django--manage-menu '() (django--get-menu-manage)))
+
+(add-hook 'menu-bar-update-hook 'django--update-menu-manage)
+
 
 (defun django-syncdb ()
   (interactive)
