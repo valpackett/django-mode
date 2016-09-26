@@ -30,4 +30,4 @@ BTW, default keybindings:
 - `C-c t` runs tests
 - `C-c s` runs syncdb
 - `C-c a` creates an app (asking for a name first)
-- `C-c m` asks you for a command to run
+- `C-c m` asks for a command to run (with completion of all available commands and ido completion)
