@@ -2,6 +2,8 @@
 
 ## How to install
 
+This package is in MELPA: `M-x package-install RET django-mode RET`.
+
 1. Install [yasnippet](http://code.google.com/p/yasnippet/)
 2. Add something like this to your Emacs config:
 
@@ -11,6 +13,13 @@
 (yas/load-directory "path-to/django-mode/snippets")
 (add-to-list 'auto-mode-alist '("\\.djhtml$" . django-html-mode))
 ```
+
+## Usage
+You can call individual commands or enable the django-mode and use keyboard shortcuts.
+
+If you like it, you have a [hydra](https://github.com/abo-abo/hydra/)
+that groups the available commands and allow to run many in a row,
+with a few key pressed: `M-x django-hydra/body` or `C-c h`.
 
 ## Jumping
 Move your cursor to a line that contains the thing you want to go and press `C-x j`.

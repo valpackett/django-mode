@@ -4,7 +4,7 @@
 
 ;; Author: Greg V <floatboth@me.com>
 ;; Keywords: languages
-;; Package-Requires: ((projectile "0") (s "0"))
+;; Package-Requires: ((projectile "0") (s "0") (hydra "0") (virtualenvwrapper "0")
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -27,8 +27,10 @@
   (error
    (require 'python-mode)))
 
+(require 'hydra)
 (require 'projectile)
 (require 's)
+(require 'virtualenvwrapper)
 
 (defvar django-template-regexp ".*\\(@render_to\\|render_to_response\\|TemplateResponse\\)(['\"]\\([^'\"]*\\)['\"].*
 ?")
@@ -178,6 +180,15 @@
       (insert ")")
       (point-max))))
 
+(defhydra django-hydra (:columns 4)
+  "
+Django mode commands (in venv %`venv-current-name):"
+  ("m" (call-interactively 'django-manage) "manage.py")
+  ("k" (call-interactively 'django-make) "from makefile")
+  ("e" elpy-hydra/body "Elpy hydra" :color blue) ;; waiting for upstream merge, super handy to run django tests.
+  ("w" (venv-workon) "Workon venv…" :color red)
+  )
+
 ;;;###autoload
 (define-derived-mode django-mode python-mode "Django" "Major mode for Django web framework.")
 (define-key django-mode-map (kbd "C-t") 'django-insert-transpy)
@@ -186,6 +197,7 @@
 (define-key django-mode-map (kbd "C-c t") 'django-test)
 (define-key django-mode-map (kbd "C-c s") 'django-syncdb)
 (define-key django-mode-map (kbd "C-c a") 'django-startapp)
+(define-key django-mode-map (kbd "C-c h") 'django-hydra/body)
 (add-hook 'django-mode-hook
           (lambda ()
             (font-lock-add-keywords nil
