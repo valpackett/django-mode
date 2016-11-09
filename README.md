@@ -27,7 +27,10 @@ Select a string you want to translate and press `C-t`. This works in both Python
 Check out the Django menu :)
 BTW, default keybindings:
 
+- `C-c m` asks for a command to run (with completion of all available commands and ido completion)
 - `C-c t` runs tests
 - `C-c s` runs syncdb
 - `C-c a` creates an app (asking for a name first)
-- `C-c m` asks for a command to run (with completion of all available commands and ido completion)
+
+## Running a make target
+With `M-x django-make` (`C-c M` in django-mode), you get a helm menu to choose a Makefile target. It will run from the project root (we use [helm-make](https://github.com/abo-abo/helm-make)).

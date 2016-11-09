@@ -4,7 +4,7 @@
 
 ;; Author: Greg V <floatboth@me.com>
 ;; Keywords: languages
-;; Package-Requires: ((projectile "0") (s "0"))
+;; Package-Requires: ((projectile "0") (s "0") (helm-make "0"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -27,6 +27,7 @@
   (error
    (require 'python-mode)))
 
+(require 'helm-make)
 (require 'projectile)
 (require 's)
 
@@ -120,6 +121,11 @@
   (let ((command (read-shell-command "Run command like this: " command)))
     (compile (concat (django-python-command) " " (django-root) "manage.py " command))))
 
+(defun django-make ()
+  "Ask for a make target with helm, run it from project's root."
+  (interactive)
+  (call-interactively 'helm-make-projectile)
+
 (defun django-syncdb ()
   (interactive)
   (django-manage "syncdb --noinput"))
@@ -186,6 +192,7 @@
 (define-key django-mode-map (kbd "C-c t") 'django-test)
 (define-key django-mode-map (kbd "C-c s") 'django-syncdb)
 (define-key django-mode-map (kbd "C-c a") 'django-startapp)
+(define-key django-mode-map (kbd "C-c M") 'django-make)
 (add-hook 'django-mode-hook
           (lambda ()
             (font-lock-add-keywords nil
