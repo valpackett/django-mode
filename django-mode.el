@@ -51,7 +51,6 @@
       ;; regexp to match windows roots, tramp roots, or regular posix roots
       (unless (string-match "\\(^[[:alpha:]]:/$\\|^/[^\/]+:\\|^/$\\)" dir)
         (django-root new-dir)))))
-      )
 
 (defun django-jump-to-template ()
   (interactive)
@@ -124,7 +123,7 @@
 (defun django-make ()
   "Ask for a make target with helm, run it from project's root."
   (interactive)
-  (call-interactively 'helm-make-projectile)
+  (call-interactively 'helm-make-projectile))
 
 (defun django-syncdb ()
   (interactive)
